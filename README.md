@@ -35,3 +35,28 @@ Roles and Permissions: (Tailwindcss)
 
 7. Users - Assign Roles
    1. >php artisan make:controller UserController -r
+
+8. app\Http\Kernel.php
+    protected $middlewareAliases = [
+       ...,
+       'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+    ];
+
+9. app\Providers\AppServiceProvider.php
+    public function boot(): void
+    {
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('superadmin') ? true : null;
+        });
+    }
+
+10. app\Models\User.php
+    class User extends Authenticatable
+    {
+        use HasApiTokens, HasFactory, Notifiable, HasRoles;
+        ...
+    }
+
+11. app\Models\Article.php
